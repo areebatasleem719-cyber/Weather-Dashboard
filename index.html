@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkySense - Weather Intelligence Platform</title>
+    <!-- FontAwesome Vector Icons Package Link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="dashboard-container">
+        
+        <!-- SIDEBAR NAVIGATION CONTAINER -->
+        <aside class="sidebar animate-fade-in">
+            <div class="brand">
+                <i class="fa-solid fa-bolt animated-thunder"></i>
+                <h2>SkySense</h2>
+            </div>
+            
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" onclick="switchTab('overview', this)" title="Overview Dashboard"><i class="fa-solid fa-table-columns"></i></a>
+                <a href="#" class="nav-item" onclick="switchTab('forecast-tab', this)" title="5-Day Forecast"><i class="fa-solid fa-chart-pie"></i></a>
+                <a href="#" class="nav-item" onclick="switchTab('map-tab', this)" title="Regional Radar"><i class="fa-solid fa-location-dot"></i></a>
+                <a href="#" class="nav-item" onclick="switchTab('alerts-tab', this)" title="Weather Advisories"><i class="fa-solid fa-calendar"></i></a>
+                <a href="#" class="nav-item" onclick="switchTab('settings-tab', this)" title="System Configurations"><i class="fa-solid fa-gear"></i></a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <small id="currentDate">---</small>
+            </div>
+        </aside>
+
+        <!-- MAIN INTERACTION VIEWPORT CONTENT -->
+        <main class="main-content">
+            
+            <!-- GLOBAL APP CONTROLS TOP BAR -->
+            <header class="top-bar animate-fade-in" id="topBarControls">
+                <div class="search-box">
+                    <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+                    <input type="text" id="cityInput" placeholder="Search Pakistani or Global City (e.g., Haripur, Lahore)...">
+                </div>
+                <div class="profile-container">
+                    <div class="profile-avatar">
+                        <i class="fa-solid fa-user-ninja"></i>
+                    </div>
+                    <span class="profile-name">Areeba Malik</span>
+                    <i class="fa-solid fa-chevron-down" style="font-size: 11px; color: var(--text-muted);"></i>
+                </div>
+            </header>
+
+            <!-- ================= SUB-PANEL CONTENT LAYER: OVERVIEW ================= -->
+            <div id="overview-content" class="tab-panel active-panel">
+                
+                <!-- Welcome Screen Placeholder Box -->
+                <div id="welcomeScreen" class="empty-state-placeholder animate-scale-up">
+                    <div class="animated-icon-wrap">
+                        <i class="fa-solid fa-cloud-sun-rain floating-anim" style="font-size: 70px; color: var(--accent-purple);"></i>
+                    </div>
+                    <h3>Welcome to SkySense Dashboard</h3>
+                    <p>Please enter a city name in the search field above to fetch current atmospheric data feeds.</p>
+                </div>
+
+                <!-- Structured Grid Output Elements -->
+                <div id="weatherBox" style="display: none;">
+                    
+                    <!-- TWO-COLUMN GRID SYSTEM DESIGN (LEFT COLUMN) -->
+                    <div class="left-panel-column animate-scale-up">
+                        <section class="hero-card">
+                            <div>
+                                <div class="location-badge"><i class="fa-solid fa-location-crosshairs"></i> Pakistan Station</div>
+                                <h2 id="cityName">---</h2>
+                                <h1 class="main-temp"><span id="mainTemp">--</span>°C</h1>
+                                <p style="font-size: 16px; font-weight: 500; text-transform: capitalize; color: var(--accent-blue);" id="weatherDesc">---</p>
+                                
+                                <div class="hero-mini-details">
+                                    <span><i class="fa-solid fa-temperature-high"></i> Feels like <span id="feelsLikeVal">--</span>°C</span>
+                                    <span><i class="fa-solid fa-circle-down"></i> Low: <span id="lowTempVal">--</span>°C</span>
+                                </div>
+                            </div>
+                            <div class="weather-icon-container">
+                                <i class="fa-solid fa-cloud-sun sun-spin main-weather-icon"></i>
+                            </div>
+                        </section>
+
+                        <section class="lower-left-block">
+                            <div class="block-title">Today's Hourly Micro Forecast Timeline</div>
+                            <div class="forecast-grid" id="forecastGrid">
+                                <!-- Populated dynamically via script array -->
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- TWO-COLUMN GRID SYSTEM DESIGN (RIGHT COLUMN) -->
+                    <div class="right-panel-column animate-scale-up">
+                        <section style="background: var(--bg-card); border-radius: 24px; padding: 24px;">
+                            <div class="block-title">Today Highlight</div>
+                            <div class="stats-grid">
+                                
+                                <!-- CARD 1: CHANCE OF RAIN -->
+                                <div class="stat-card">
+                                    <div class="stat-info">
+                                        <h3>Chance of Rain</h3>
+                                        <div class="stat-main-box">
+                                            <p id="popVal">--%</p>
+                                            <i class="fa-solid fa-cloud-showers-water rain-drop-anim text-blue"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CARD 2: UV INDEX -->
+                                <div class="stat-card">
+                                    <div class="stat-info">
+                                        <h3>UV Index</h3>
+                                        <div class="stat-main-box">
+                                            <p id="uvVal">3 <span style="font-size:12px; font-weight:normal; color:var(--text-muted)">Moderate</span></p>
+                                            <i class="fa-solid fa-sun sun-spin text-yellow"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CARD 3: WIND STATUS -->
+                                <div class="stat-card">
+                                    <div class="stat-info">
+                                        <h3>Wind Status</h3>
+                                        <div class="stat-main-box" style="align-items: flex-end;">
+                                            <p id="windVal" style="font-size: 20px;">-- km/h</p>
+                                            <!-- Mini Vector Graphic Bar Simulation matching image_6f310b.jpg -->
+                                            <div class="mini-chart-vector">
+                                                <div class="bar-vect" style="height: 15px;"></div>
+                                                <div class="bar-vect" style="height: 25px;"></div>
+                                                <div class="bar-vect active" style="height: 40px;"></div>
+                                                <div class="bar-vect" style="height: 20px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- CARD 4: HUMIDITY -->
+                                <div class="stat-card">
+                                    <div class="stat-info">
+                                        <h3>Humidity</h3>
+                                        <div class="stat-main-box">
+                                            <p id="humidityVal">--%</p>
+                                            <i class="fa-solid fa-cloud pulsing-cloud text-gray"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </section>
+
+                        <section class="lower-right-block">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                <div class="block-title" style="margin-bottom:0;">Other Cities</div>
+                                <span style="font-size: 12px; color: var(--accent-blue); font-weight:500;">Pakistan Stations</span>
+                            </div>
+                            <div class="static-cities-grid">
+                                <div class="static-city-item">
+                                    <div><p style="font-weight: 600;">38°C</p><p style="font-size: 11px; color: var(--text-muted);">Karachi, PK</p></div>
+                                    <i class="fa-solid fa-cloudpulsing-cloud fa-cloud pulsing-cloud" style="color: var(--text-gray);"></i>
+                                </div>
+                                <div class="static-city-item">
+                                    <div><p style="font-weight: 600;">32°C</p><p style="font-size: 11px; color: var(--text-muted);">Islamabad, PK</p></div>
+                                    <i class="fa-solid fa-cloud-showers-heavy rain-drop-anim" style="color: var(--accent-blue);"></i>
+                                </div>
+                                <div class="static-city-item">
+                                    <div><p style="font-weight: 600;">35°C</p><p style="font-size: 11px; color: var(--text-muted);">Peshawar, PK</p></div>
+                                    <i class="fa-solid fa-sun sun-spin" style="color: var(--sunny-yellow);"></i>
+                                </div>
+                                <div class="static-city-item">
+                                    <div><p style="font-weight: 600;">41°C</p><p style="font-size: 11px; color: var(--text-muted);">Multan, PK</p></div>
+                                    <i class="fa-solid fa-sun sun-spin" style="color: var(--sunny-yellow);"></i>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ================= SUB-PANEL CONTENT LAYER: EXTENDED FORECAST ================= -->
+            <div id="forecast-tab-content" class="tab-panel">
+                <section class="forecast-section animate-scale-up" style="background: var(--bg-card); padding: 32px; border-radius: 24px; min-height: 400px;">
+                    <h3 id="forecastTitle" style="font-size: 18px; margin-bottom: 24px; font-weight: 600; letter-spacing: 0.5px; color: #FFF;">5-DAY EXTENDED FORECAST INDEX</h3>
+                    
+                    <div class="forecast-grid" id="extendedForecastGrid">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <div id="forecastPrompt" class="empty-state-placeholder" style="margin-top:0; background: transparent; padding:40px;">
+                        <i class="fa-solid fa-calendar-days floating-anim" style="font-size: 50px; color: var(--text-muted); margin-bottom: 15px;"></i>
+                        <h3>Extended Metrical Graph Pipeline Empty</h3>
+                        <p>Search for an active city terminal under the core Overview Dashboard tab to populate historical day matrices.</p>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ================= SUB-PANEL CONTENT LAYER: MAPS INTERFACE ================= -->
+            <div id="map-tab-content" class="tab-panel">
+                <div class="map-container-mock animate-scale-up">
+                    <div class="map-sidebar-cities">
+                        <h3><i class="fa-solid fa-earth-asia"></i> Regional Radar Trackers</h3>
+                        <div class="city-map-item active" onclick="updateMockMap('lahore')"><strong>Lahore Station</strong><span>39°C | Systems Nominal</span></div>
+                        <div class="city-map-item" onclick="updateMockMap('haripur')"><strong>Haripur Node</strong><span>31°C | Humid Tracking</span></div>
+                        <div class="city-map-item" onclick="updateMockMap('rawalpindi')"><strong>Rawalpindi Terminal</strong><span>33°C | Active Cloud Matrix</span></div>
+                    </div>
+                    <div class="map-display-area" id="mapDisplayArea">
+                        <i class="fa-solid fa-map-location-dot floating-anim" style="font-size: 70px; opacity: 0.15; margin-bottom: 20px;"></i>
+                        <h2 id="mapVisualCity">Lahore Regional Radar Map</h2>
+                        <p style="color: var(--text-gray); font-size: 14px; margin-top: 10px; max-width: 400px;">Simulating live satellite weather tracking feed frames over domestic geographic coordination matrices.</p>
+                        <div class="mock-radar-dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= SUB-PANEL CONTENT LAYER: SEVERE WEATHER ALERTS ================= -->
+            <div id="alerts-tab-content" class="tab-panel">
+                <div class="alerts-wrapper animate-scale-up">
+                    <div class="alert-banner warning">
+                        <div class="alert-icon-box"><i class="fa-solid fa-triangle-exclamation animated-thunder"></i></div>
+                        <div class="alert-details">
+                            <h4>Extreme Regional Heatwave Advisory</h4>
+                            <p>Ambient thermal indexes stay elevated above traditional warning thresholds during standard mid-day cycles across Punjab and Sindh districts.</p>
+                            <small>System Matrix Processing Feed Node: PMD Severe Live Tracker</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= SUB-PANEL CONTENT LAYER: USER APP PREFERENCES ================= -->
+            <div id="settings-tab-content" class="tab-panel">
+                <div class="settings-grid-layout animate-scale-up">
+                    <div class="settings-card">
+                        <h3><i class="fa-solid fa-sliders"></i> System Configurations</h3>
+                        <div class="setting-option">
+                            <label>Temperature Conversion Metrics</label>
+                            <select><option>Celsius (°C)</option><option>Fahrenheit (°F)</option></select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
