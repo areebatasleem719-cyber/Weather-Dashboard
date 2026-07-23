@@ -28,7 +28,7 @@ async function getWeatherData(city) {
         const weatherData = await weatherRes.json();
 
         if (weatherData.cod !== 200) {
-            alert("Location data terminal not found. Please review spelling parameters.");
+            alert("City not found. Please check spelling.");
             return;
         }
 
@@ -40,7 +40,7 @@ async function getWeatherData(city) {
         displayForecast(forecastData);
 
     } catch (error) {
-        console.error("Critical exceptions logged on weather fetching routines:", error);
+        console.error("Error fetching weather data:", error);
     }
 }
 
@@ -76,7 +76,7 @@ function displayForecast(data) {
     const hourlyData = data.list.slice(0, 5); 
     const dailyData = data.list.filter(item => item.dt_txt.includes("12:00:00"));
 
-    // Hourly forecast cards
+    // Hourly Quick Row
     hourlyData.forEach(item => {
         const time = new Date(item.dt * 1000);
         let hours = time.getHours();
@@ -92,13 +92,13 @@ function displayForecast(data) {
         hourlyCard.className = "forecast-card";
         hourlyCard.innerHTML = `
             <div class="forecast-day">${timeStr}</div>
-            <img src="https://openweathermap.org/img/wn/${icon}@2x.png" class="forecast-emoji floating-anim" alt="hourly-icon">
+            <img src="https://openweathermap.org/img/wn/${icon}@2x.png" class="forecast-emoji" alt="hourly-icon">
             <div class="forecast-temp">${temp}°C</div>
         `;
         forecastGrid.appendChild(hourlyCard);
     });
 
-    // 5-day extended view
+    // 5-Day Extended View
     dailyData.forEach(day => {
         const date = new Date(day.dt * 1000);
         const dayName = date.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
@@ -110,7 +110,7 @@ function displayForecast(data) {
             extendedCard.className = "forecast-card";
             extendedCard.innerHTML = `
                 <div class="forecast-day">${dayName}</div>
-                <img src="https://openweathermap.org/img/wn/${icon}@2x.png" class="forecast-emoji floating-anim" alt="daily-icon">
+                <img src="https://openweathermap.org/img/wn/${icon}@2x.png" class="forecast-emoji" alt="daily-icon">
                 <div class="forecast-temp">${temp}°C</div>
             `;
             extendedForecastGrid.appendChild(extendedCard);
@@ -118,6 +118,7 @@ function displayForecast(data) {
     });
 }
 
+// TAB ROUTING SYSTEM
 function switchTab(tabId, element) {
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
     element.classList.add('active');
@@ -127,22 +128,8 @@ function switchTab(tabId, element) {
     if (tabId === 'overview') {
         document.getElementById('overview-content').classList.add('active-panel');
     } else {
-        document.getElementById(`${tabId}-content`).classList.add('active-panel');
-    }
-
-    const topBar = document.getElementById('topBarControls');
-    if (tabId === 'map-tab' || tabId === 'alerts-tab' || tabId === 'settings-tab') {
-        if(topBar) {
-            topBar.style.visibility = "hidden";
-            topBar.style.height = "0px";
-            topBar.style.marginBottom = "0px";
-        }
-    } else {
-        if(topBar) {
-            topBar.style.visibility = "visible";
-            topBar.style.height = "auto";
-            topBar.style.marginBottom = "24px";
-        }
+        const targetPanel = document.getElementById(`${tabId}-content`);
+        if(targetPanel) targetPanel.classList.add('active-panel');
     }
 }
 
